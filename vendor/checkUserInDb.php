@@ -11,6 +11,6 @@
 		if (!$user_exists)
 		{
 			unset($_SESSION['user']);
-			header('Location: ../index.php');
+			header('Location: ../login.php');
 		}
 	}

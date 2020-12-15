@@ -5,7 +5,7 @@
 	align-items: center;
 }
 
-.modal_menu button {
+.settings_choose {
 	background: none;
 	border: none;
 	padding: 0;
@@ -35,16 +35,16 @@
 }
 
 .modal-header {
-	padding: 10px 15px;
+	padding: 10px 15px 40px 15px;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	/* border-bottom: 1px solid#bfbfbf; */
 }
 
 .modal-header .title {
 	font-size: 1.25rem;
 	font-weight: bold;
+	color: #7c9ab7;
 }
 
 .modal-header .close-button {
@@ -54,6 +54,7 @@
 	background: none;
 	font-size: 1.25rem;
 	font-weight: bold;
+	color: #7c9ab7;
 }
 
 .modal-body {

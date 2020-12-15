@@ -43,7 +43,8 @@ try {
 				email VARCHAR(30) NOT NULL,
 				user_pwd VARCHAR(32) NOT NULL,
 				user_hash VARCHAR (32) NOT NULL,
-				varified INT(1) NOT NULL
+				varified INT(1) NOT NULL,
+				notifications INT(1) NOT NULL
 				)";
 			$connDb->exec($tableUsers);
 			$tableImages = "CREATE TABLE IF NOT EXISTS images (

@@ -7,6 +7,18 @@
 	$user_name = $_POST['user_name'];
 	$user_pwd = $_POST['user_pwd'];
 
+	// $name_regex = '/^[a-zA-Z0-9_]{3,15}$/';
+	// $pwd_regex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,15}$/';
+
+	// if (!preg_match($name_regex, $user_name) || !preg_match($pwd_regex, $user_pwd)) {
+	// 	$response = [
+	// 		"status" => false,
+	// 		"message" => 'Incorrect symbols',
+	// 	];
+	// 	echo json_encode($response);
+	// 	die();
+	// }
+
 	$error_fields = [];
 
 	if ($user_name === '') {

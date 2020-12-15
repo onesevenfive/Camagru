@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	if ($_SESSION['user']) {
-		header('Location: profile.php');
+		header('Location: index.php');
 	}
 ?>
 
@@ -28,14 +28,19 @@
 		<form class="form_login">
 			<!-- <label>Login</label> -->
 			<input class="signin_input" type="text" name="user_name" placeholder="Login">
+			<p class="error_user_name none" id="valid_fields">User name must contain from 3 to 15 chars, uppercase, lowercase, numeral and underscore</p>
 			<!-- <label>Email</label> -->
 			<input class="signin_input" type="email" name="email" placeholder="Email">
 			<!-- <label>Password</label> -->
 			<input class="signin_input" type="password" name="user_pwd" placeholder="Password">
+			<p class="error_user_pwd none" id="valid_fields">Password must contain from 6 to 15 chars, including at least 1 uppercase letter and 1 numeral</p>
 			<!-- <label>Password confirm</label> -->
 			<input class="signin_input" type="password" name="user_pwd_confirm" placeholder="Password confirm">
+			<div class="notification_box">
+				<input class="signin_input" id="notif_checkbox" type="checkbox" checked><p class="notifications">Receive comment notifications on email</p>
+			</div>
 			<button class="register_btn" type="submit">Register</button>
-			<p>Already got account? - <a href="/index.php">SignIn</a></p>
+			<p>Already got account? - <a href="/login.php">SignIn</a></p>
 			<p class="error_msg none">Test message!!</p>
 		</form>
 	</main>

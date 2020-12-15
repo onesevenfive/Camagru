@@ -23,8 +23,10 @@
 		$delete_like = $connDb->prepare($sql_delete_like);
 		$delete_like->bindValue(':image_id', $image_id);
 		$delete_like->execute();
+		$likes_number = getImageLikes($image_id, $connDb);
 		$response = [
-			"status" => false
+			"status" => false,
+			"likes" => $likes_number
 		];
 		echo json_encode($response);
 		die();
@@ -37,8 +39,10 @@
 		$sql_insert_like = "INSERT INTO `likes`(`id`, `image_id`, `user_id`) VALUES(NULL, :image_id, :user_id)";
 		$insert_like = $connDb->prepare($sql_insert_like);
 		$insert_like->execute($data_upload);
+		$likes_number = getImageLikes($image_id, $connDb);
 		$response = [
-			"status" => true
+			"status" => true,
+			"likes" => $likes_number
 		];
 		echo json_encode($response);
 		die();

@@ -1,7 +1,7 @@
 <?php
 	session_start();
-	require_once 'vendor/createDatabase.php';
-	if ($_SESSION['user'] && $_SESSION['user']['varified'] == 1) {
+	require_once 'vendor/checkUserInDb.php';
+		if ($_SESSION['user'] && $_SESSION['user']['varified'] == 1) {
 		header('Location: profile.php');
 	}
 ?>
@@ -14,6 +14,7 @@
 	<title>Ndaniell's Camagru</title>
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
 </head>
 <body>
 	<header class="header">
@@ -23,24 +24,81 @@
 					CAMAGRU
 				</div>
 			</div>
+			<div class="header_right">
+				<div class="header_menu">
+					<a href="login.php">Login</a>
+				</div>
+			</div>
 		</div>
 	</header>
-	<main class="signin_main">
-		<form class="form_login">
-			<!-- <label>Login</label> -->
-			<input class="signin_input" type="text" name="user_name" placeholder="Login">
-			<!-- <label>Password</label> -->
-			<input class="signin_input" type="password" name="user_pwd" placeholder="Password">
-			<button class="signin_btn" type="submit">Sign In</button>
-			<p>Don't have account? - <a href="/register.php">SignUp</a></p>
-			<p class="error_msg none">Test message!!</p>
-		</form>
+	<main class="profile_main">
+		<div class="gallery">
+			<?php
+				require_once 'vendor/createDatabase.php';
+				require_once 'vendor/dbFunctions.php';
+				function printImages($files, $connDb) {
+					$files = array_filter($files, function($file) {
+						return !in_array($file, ['.' , '..']);
+					});
+					if (count($files)) {
+						foreach ($files as $file) {
+							$imgData = getUserIdWithSrc($file, $connDb);
+							$user_name = getUserNameWithUserId($imgData['user_id'], $connDb)['user_name'];
+							$comments_number = getCommentsNumber($imgData['id'], $connDb);
+							$currentUserLike = checkCurrentUserLike($_SESSION['user']['id'], $imgData['id'], $connDb);
+							$likes_number = getImageLikes($imgData['id'], $connDb);
+							if ($currentUserLike) {
+								$isLike = 'fas';
+							} else {
+								$isLike = 'far';
+							}
+							?>
+								<div class="gallery__item">
+									<img src="/uploads/<?= $file ?>" alt="image" class="gallery__image">
+									<div class="more">
+										<div>
+											<a href="#"><i class="<?= $isLike ?> fa-heart"></i></a>
+											<a href="#" class="likes"> <?= $likes_number ?> </a>
+											<a href="#" id="comments"><i class="far fa-comments"></i></a>
+											<a href="#" class="comments"> <?= $comments_number ?> </a>
+										</div>
+										<a href="#">by <?= $user_name ?></a>
+									</div>
+								</div>
+							<?php
+						}
+					}
+					else {
+						echo '<div class="no-photo">Нет фото!</div>';
+					}
+				}
+
+				$dir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/';
+				$filesData = array();
+				foreach (scandir($dir) as $file) {
+					$filesData[$file] = filemtime($dir . '/' . $file);
+				}
+				arsort($filesData);
+				$filesData = array_keys($filesData);
+				printImages($filesData, $connDb);
+			?>
+		</div>
+		<div class="modal">
+			<img src="" alt="image" class="opened_image">
+			<div class="comment_zone"></div>
+			<div class="send_comment">
+				<input type="text" class="signin_input" placeholder="Comment plz..">
+				<button class="signin_btn" type="submit" id="sendCommentBtn">Send</button>
+			</div>
+			<button class="close_img_btn" type="submit">Close</button>
+		</div>
+		<div id="overlay"></div>
 	</main>
 	<footer class="footer">
 		<div class="footer_text">
 			&copy; Ndaniell's Camagru BOOOOM!
 		</div>
 	</footer>
-	<script src="js/auth.js"></script>
+	<!-- <script src="js/script.js"></script> -->
 </body>
 </html>

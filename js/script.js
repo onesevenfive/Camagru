@@ -1,11 +1,15 @@
 const form = document.querySelector('.form');
 const gallery = document.querySelector('.gallery');
-const fileInput = document.querySelector('.file__input');
+// const fileInput = document.querySelector('.file__input');
 const formBtn = document.querySelector('.btn');
 
-// var pictureCrt = document.querySelectorAll('.gallery__item');
 const closeOpenPict = document.querySelector('.close_img_btn');
+const addImage = document.querySelector('.add_image');
+const newImageMake = document.querySelector('.new_image');
+const closeNewImage = document.querySelector('.close_new_image');
 const overlay = document.getElementById('overlay')
+// const uploadFile = document.querySelector('.upload_file');
+// const saveBtn = document.querySelector('.save_btn');
 
 const sendCommentBtn = document.querySelector('#sendCommentBtn');
 
@@ -23,7 +27,6 @@ gallery.addEventListener('click', (e) => {
 		let likeClass = like.className;
 		let imageSrc = like.closest('.gallery__item').querySelector('.gallery__image').getAttribute('src');
 		imageSrc = imageSrc.substring(imageSrc.lastIndexOf('/') + 1);
-		console.log(likeClass);
 		let comment = {
 			like: likeClass,
 			image_src: imageSrc
@@ -43,9 +46,11 @@ gallery.addEventListener('click', (e) => {
 			if (answer.status) {
 				like.classList.remove('far', 'fa-heart');
 				like.classList.add('fas', 'fa-heart');
+				like.closest('.gallery__item').querySelector('.likes').innerHTML = answer.likes;
 			} else {
 				like.classList.remove('fas', 'fa-heart');
 				like.classList.add('far', 'fa-heart');
+				like.closest('.gallery__item').querySelector('.likes').innerHTML = answer.likes;
 			}
 		});
 	}
@@ -56,7 +61,7 @@ gallery.addEventListener('click', (e) => {
 		let stringToDeleteLength = stringToDelete.length;
 		let imgName = imageFullPath.substr(stringToDeleteLength);
 
-		fetch(`${location.origin}/deleteImage.php`, {
+		fetch(`${location.origin}/vendor/deleteImage.php`, {
 			method: 'POST',
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded'
@@ -75,8 +80,41 @@ gallery.addEventListener('click', (e) => {
 	}
 })
 
-gallery.addEventListener('mouseover', (e) => {
-	let imageSrc = gallery.querySelector('.gallery__image').getAttribute('src');
+// gallery.addEventListener('mouseover', (e) => {
+// 	let self = e.target;
+// 	// console.log(self.className);
+// 	if (self.className == "gallery__image" || self.className == "more") {
+// 		let imageSrc = self.closest('.gallery__item').querySelector('.gallery__image').getAttribute('src');
+// 		console.log(imageSrc);
+// 		imageSrc = imageSrc.substring(imageSrc.lastIndexOf('/') + 1);
+// 		let comment = {
+// 			image_src: imageSrc
+// 		}
+// 		fetch('vendor/getstats.php', {
+// 			method: 'POST',
+// 			headers: {
+// 				'Content-Type': 'application/json',
+// 			},
+// 			body: JSON.stringify(comment)
+// 		})
+// 		.then(function(response) {
+// 			return response.text()
+// 		})
+// 		.then(function(body) {
+// 			let answer = JSON.parse(body);
+// 			if (answer.status) {
+// 				self.closest('.gallery__item').querySelector('.likes').innerHTML = answer.likes;
+// 				self.closest('.gallery__item').querySelector('.comments').innerHTML = answer.comments;
+// 			}
+// 		});
+// 	}
+// });
+
+// Close opened image and using overlay
+closeOpenPict.addEventListener('click', () => {
+	const modal = document.querySelector('.modal');
+
+	let imageSrc = modal.querySelector('.opened_image').getAttribute('src');
 	imageSrc = imageSrc.substring(imageSrc.lastIndexOf('/') + 1);
 	let comment = {
 		image_src: imageSrc
@@ -94,75 +132,20 @@ gallery.addEventListener('mouseover', (e) => {
 	.then(function(body) {
 		let answer = JSON.parse(body);
 		if (answer.status) {
-			gallery.querySelector('.likes').innerHTML = answer.likes;
-			gallery.querySelector('.comments').innerHTML = answer.comments;
+			let allImg = gallery.querySelectorAll('.gallery__image');
+			let neededImg, t;
+			for (let i = 0; i < allImg.length; i++) {
+				t = allImg[i].getAttribute('src');
+				t = t.substring(t.lastIndexOf('/') + 1);
+				if (t == imageSrc) {
+					neededImg = allImg[i];
+					break;
+				}
+			}
+			neededImg.closest('.gallery__item').querySelector('.comments').innerHTML = answer.comments;
 		}
 	});
-});
 
-// File name on button
-fileInput.addEventListener('change', (event) => {
-	let files = event.currentTarget.files;
-
-	if (files) {
-		formBtn.removeAttribute('disabled');
-		fileInput.closest('.file').querySelector('.file__text').textContent = '';
-		fileInput.closest('.file').querySelector('.file__name').textContent = files[0].name;
-	}
-})
-
-//Add foto
-form.addEventListener('submit', (event) => {
-	event.preventDefault();
-	let file = form.querySelector('.file__input').files[0];
-
-	let type = file.type;
-	let size = file.size;
-
-	if (size <= 8000000 && (type == 'image/jpg' || type == 'image/jpeg' || type == 'image/png')) {
-		let formData = new FormData(form);
-		formData.append('file', file);
-
-		fetch(`${location.origin}/addImages.php`, {
-			method: 'POST',
-			body: formData
-		})
-		.then(function(response) {
-			return response.text()
-		})
-		.then(function(body) {
-			let answer = JSON.parse(body);
-			let fileHTML = `
-			<div class="gallery__item">
-				<img src="/uploads/${answer.image_name}" alt="image" class="gallery__image">
-				<a href="#" class="gallery__btn"><i class="far fa-trash-alt"></i></a>
-				<div class="more">
-					<div>
-						<a href="#"><i class="far fa-heart"></i></a>
-						<a href="#" class="likes"> </a>
-						<a href="#" id="comments"><i class="far fa-comments"></i></a>
-						<a href="#" class="comments"> </a>
-					</div>
-					<a href="#">by ${answer.user_name}</a>
-				</div>
-			</div>
-			`;
-			
-			if (document.contains(document.querySelector('.no-photo'))) {
-				document.querySelector('.no-photo').remove();
-			}
-			gallery.insertAdjacentHTML('afterbegin', fileHTML);
-			formBtn.setAttribute('disabled', true);
-			fileInput.closest('.file').querySelector('.file__text').textContent = 'Выберите файл в формате jpg или png';
-			fileInput.closest('.file').querySelector('.file__name').textContent = '';
-		});
-	} else {
-		alert('Файл не соответствует размеру или типу');
-	}
-});
-
-closeOpenPict.addEventListener('click', () => {
-	const modal = document.querySelector('.modal');
 	closePicture(modal);
 });
 
@@ -171,11 +154,14 @@ overlay.addEventListener('click', () => {
 	closePicture(modal);
 });
 
+
+//Modal opener and closer
 function openPicture(modal, img_src) {
 	if (modal == null) return;
 	modal.classList.add('active');
 	overlay.classList.add('active')
 	modal.querySelector('.opened_image').src = img_src;
+	modal.querySelector('.signin_input').classList.remove('error_fields');
 }
 
 function closePicture(modal) {
@@ -185,13 +171,13 @@ function closePicture(modal) {
 }
 
 //Comment zone
-
+// Add new comment
 sendCommentBtn.addEventListener('click', (e) => {
 	e.preventDefault();
+	sendCommentBtn.closest('.modal').querySelector('.signin_input').classList.remove('error_fields');
 	let commentText = sendCommentBtn.closest('.modal').querySelector('.signin_input').value;
 	let imageSrc = sendCommentBtn.closest('.modal').querySelector('.opened_image').src;
 	imageSrc = imageSrc.substring(imageSrc.lastIndexOf('/') + 1);
-
 
 	let today = new Date();
 	let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -203,26 +189,30 @@ sendCommentBtn.addEventListener('click', (e) => {
 		comment_time: dateTime,
 		image_src: imageSrc
 	}
-
-	fetch('vendor/comment.php', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(comment)
-	})
-	.then(function(response) {
-		return response.text()
-	})
-	.then(function(body) {
-		let answer = JSON.parse(body);
-		if (answer.status) {
-			fillComments(imageSrc);
-			sendCommentBtn.closest('.modal').querySelector('.signin_input').value = "";
-		}
-	});
+	if (commentText == "") {
+		sendCommentBtn.closest('.modal').querySelector('.signin_input').classList.add('error_fields');
+	} else {
+		fetch('vendor/comment.php', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(comment)
+		})
+		.then(function(response) {
+			return response.text()
+		})
+		.then(function(body) {
+			let answer = JSON.parse(body);
+			if (answer.status) {
+				fillComments(imageSrc);
+				sendCommentBtn.closest('.modal').querySelector('.signin_input').value = "";
+			}
+		});
+	}
 });
 
+//Fill all comments
 function fillComments(imageSrc) {
 	let allComments = sendCommentBtn.closest('.modal').querySelector('.comment_zone');
 	allComments.innerHTML = "";

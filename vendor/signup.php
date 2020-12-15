@@ -8,6 +8,7 @@
 	$email = $_POST['email'];
 	$user_pwd = $_POST['user_pwd'];
 	$user_pwd_confirm = $_POST['user_pwd_confirm'];
+	$notif = $_POST['notif'];
 
 	$sql_get_user_name = "SELECT * FROM users WHERE user_name = :user";
 	$check_user_name = $connDb->prepare($sql_get_user_name);
@@ -20,6 +21,22 @@
 			"message" => 'This login already exists',
 			"type" => 1,
 			"fields" => ['user_name']
+		];
+		echo json_encode($response);
+		die();
+	}
+
+	$sql_get_email = "SELECT * FROM users WHERE email = :email";
+	$check_user_email = $connDb->prepare($sql_get_email);
+	$check_user_email->bindValue(':email', $email);
+	$check_user_email->execute();
+	$email_match_found = $check_user_email->fetch(PDO::FETCH_ASSOC);
+	if ($email_match_found) {
+		$response = [
+			"status" => false,
+			"message" => 'This email already registered',
+			"type" => 1,
+			"fields" => ['email']
 		];
 		echo json_encode($response);
 		die();
@@ -56,9 +73,10 @@
 			'user' => "$user_name",
 			'email' => "$email",
 			'pwd' => "$user_pwd",
-			'user_hash' => "$user_hash"
+			'user_hash' => "$user_hash",
+			'notif' => "$notif"
 		);
-		$sql_insert_user = "INSERT INTO `users`(`id`, `user_name`, `email`, `user_pwd`, `user_hash`, `varified`) VALUES(NULL, :user, :email, :pwd, :user_hash, 0)";
+		$sql_insert_user = "INSERT INTO `users`(`id`, `user_name`, `email`, `user_pwd`, `user_hash`, `varified`, `notifications`) VALUES(NULL, :user, :email, :pwd, :user_hash, 0, :notif)";
 		$prep_insert_user = $connDb->prepare($sql_insert_user);
 		$prep_insert_user->execute($data_upload);
 
@@ -70,9 +88,10 @@
 		$message = '
 				<html>
 				<head>
-				<title>Email confirm</title>
+				<title>Camagru project email confirm</title>
 				</head>
 				<body>
+				<p>Welcome to Camargu!</p>
 				<p>To confirm your email click <a href="localhost/confirmed.php?hash=' . $user_hash . '">link</a></p>
 				</body>
 				</html>

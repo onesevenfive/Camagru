@@ -26,19 +26,19 @@
 			</div>
 			<div class="header_right">
 				<div class="header_menu">
+					<a href="profile_my.php">My gallery</a>
 					<a href="settings.php">Settings</a>
-					<a href="#">About</a>
 					<a href="vendor/logout.php">Logout</a>
 				</div>
-				<div class="hello_user">
+				<!-- <div class="hello_user">
 					Hello, <?= $_SESSION['user']['user_name'] ?>!
-				</div>
+				</div> -->
 			</div>
 		</div>
 	</header>
 	<main class="profile_main">
 	
-		<form action="addImages.php" method="POST" class="form content__form">
+		<form action="vendor/addImages.php" method="POST" class="form none">
 			<label class="file">
 				<span class="file__text">Выберите файл в формате jpg или png</span>
 				<span class="file__name"></span>
@@ -57,9 +57,9 @@
 					if (count($files)) {
 						foreach ($files as $file) {
 							$imgData = getUserIdWithSrc($file, $connDb);
-							$user_name = getUserNameWithUserId($imgData['user_id'], $connDb);
+							$user_name = getUserNameWithUserId($imgData['user_id'], $connDb)['user_name'];
 							$comments_number = getCommentsNumber($imgData['id'], $connDb);
-							$currentUserLike = checkCurrentUserLike($imgData['user_id'], $imgData['id'], $connDb);
+							$currentUserLike = checkCurrentUserLike($_SESSION['user']['id'], $imgData['id'], $connDb);
 							$likes_number = getImageLikes($imgData['id'], $connDb);
 							if ($currentUserLike) {
 								$isLike = 'fas';
@@ -69,7 +69,6 @@
 							?>
 								<div class="gallery__item">
 									<img src="/uploads/<?= $file ?>" alt="image" class="gallery__image">
-									<a href="#" class="gallery__btn"><i class="far fa-trash-alt"></i></a>
 									<div class="more">
 										<div>
 											<a href="#"><i class="<?= $isLike ?> fa-heart"></i></a>
@@ -105,7 +104,7 @@
 				<input type="text" class="signin_input" placeholder="Comment plz..">
 				<button class="signin_btn" type="submit" id="sendCommentBtn">Send</button>
 			</div>
-			<button class="close_img_btn" type="submit">Close</button>
+			<button class="close_img_btn" type="submit">&times;</button>
 		</div>
 		<div id="overlay"></div>
 	</main>

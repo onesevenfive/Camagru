@@ -1,6 +1,7 @@
 <?php
 	session_start();
 	require_once 'createDatabase.php';
+	require_once 'dbFunctions.php';
 
 	$_POST = json_decode(file_get_contents("php://input"), true);
 
@@ -55,23 +56,52 @@
 	}
 	if (isset($_POST['new_email'])) {
 		$new_email = $_POST['new_email'];
-		if (checkPwd($connDb, $user_pwd, $user_name)) {
-			$sql_set_value = "UPDATE users SET email = :new_email WHERE user_name = :user_name";
+		if ($new_email != '') {
+			if (checkPwd($connDb, $user_pwd, $user_name)) {
+				$sql_set_value = "UPDATE users SET email = :new_email WHERE user_name = :user_name";
+				$set_value = $connDb->prepare($sql_set_value);
+				$set_value->bindValue(':new_email', $new_email);
+				$set_value->bindValue(':user_name', $user_name);
+				$set_value->execute();
+				$_SESSION['user']['email'] = $new_email;
+				setNotifications($connDb);
+
+				$response = [
+					"status" => true,
+					"message" => 'Email changed successfully'
+				];
+				echo json_encode($response);
+			} else {
+				$response = [
+					"status" => false,
+					"message" => 'Incorrect password!'
+				];
+				echo json_encode($response);
+			}
+		} else {
+			setNotifications($connDb);
+		}
+	}
+	if (isset($_POST['notif'])) {
+		$currentUserData = getUserNameWithUserId($_SESSION['user']['id'], $connDb);
+		if ($_POST['notif'] == true && $currentUserData['notifications'] == 0) {
+			$sql_set_value = "UPDATE users SET notifications = 1 WHERE user_name = :user_name";
 			$set_value = $connDb->prepare($sql_set_value);
-			$set_value->bindValue(':new_email', $new_email);
 			$set_value->bindValue(':user_name', $user_name);
 			$set_value->execute();
-			$_SESSION['user']['email'] = $new_email;
-
 			$response = [
 				"status" => true,
-				"message" => 'Email changed successfully'
+				"notif" => 'checked'
 			];
 			echo json_encode($response);
-		} else {
+		} else if ($_POST['notif'] == false && $currentUserData['notifications'] == 1) {
+			$sql_set_value = "UPDATE users SET notifications = 0 WHERE user_name = :user_name";
+			$set_value = $connDb->prepare($sql_set_value);
+			$set_value->bindValue(':user_name', $user_name);
+			$set_value->execute();
 			$response = [
-				"status" => false,
-				"message" => 'Incorrect password!'
+				"status" => true,
+				"notif" => ''
 			];
 			echo json_encode($response);
 		}
@@ -119,4 +149,19 @@
 			$ret = false;
 		}
 		return $ret;
+	}
+
+	function setNotifications($connDb) {
+		$currentUserData = getUserNameWithUserId($_SESSION['user']['id'], $connDb);
+		if ($_POST['notif'] == true && $currentUserData['notifications'] == 0) {
+			$sql_set_value = "UPDATE users SET notifications = 1 WHERE user_name = :user_name";
+			$set_value = $connDb->prepare($sql_set_value);
+			$set_value->bindValue(':user_name', $user_name);
+			$set_value->execute();
+		} else if ($_POST['notif'] == false && $currentUserData['notifications'] == 1) {
+			$sql_set_value = "UPDATE users SET notifications = 0 WHERE user_name = :user_name";
+			$set_value = $connDb->prepare($sql_set_value);
+			$set_value->bindValue(':user_name', $user_name);
+			$set_value->execute();
+		}
 	}
