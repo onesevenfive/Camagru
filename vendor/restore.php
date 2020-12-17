@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	require_once 'createDatabase.php';
+	require_once __DIR__ . '/../config/setup.php';
 
 	$_POST = json_decode(file_get_contents("php://input"), true);
 
@@ -66,16 +66,34 @@
 			echo json_encode($response);
 			die();
 		}
-		$newPwd = md5($newPwd);
-		$sql_set_value = "UPDATE users SET user_pwd = :user_pwd WHERE user_hash = :user_hash";
-		$set_value = $connDb->prepare($sql_set_value);
-		$set_value->bindValue(':user_pwd', $newPwd);
-		$set_value->bindValue(':user_hash', $hash_restore);
-		$set_value->execute();
-		$response = [
-			"status" => true,
-			"message" => 'New password successfully set'
-		];
-		echo json_encode($response);
-		die();
+		$sql_check_user_hash = "SELECT * FROM users WHERE user_hash = :user_hash";
+		$check_user_hash = $connDb->prepare($sql_check_user_hash);
+		$check_user_hash->bindValue(':user_hash', $hash_restore);
+		$check_user_hash->execute();
+		$hash_restore_found = $check_user_hash->fetch(PDO::FETCH_ASSOC);
+		if ($hash_restore_found) {
+			$newPwd = md5($newPwd);
+			$sql_set_value = "UPDATE users SET user_pwd = :user_pwd WHERE user_hash = :user_hash";
+			$set_value = $connDb->prepare($sql_set_value);
+			$set_value->bindValue(':user_pwd', $newPwd);
+			$set_value->bindValue(':user_hash', $hash_restore);
+			$set_value->execute();
+			$sql_set_value1 = "UPDATE users SET user_hash = 0 WHERE user_pwd = :user_pwd";
+			$set_value1 = $connDb->prepare($sql_set_value1);
+			$set_value1->bindValue(':user_pwd', $newPwd);
+			$set_value1->execute();
+			$response = [
+				"status" => true,
+				"message" => 'New password successfully set'
+			];
+			echo json_encode($response);
+			die();
+		} else {
+			$response = [
+				"status" => false,
+				"message" => 'Wrong link!'
+			];
+			echo json_encode($response);
+			die();
+		}
 	}

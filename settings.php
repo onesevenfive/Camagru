@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	require_once 'vendor/checkUserInDb.php';
-	require_once 'vendor/createDatabase.php';
+	require_once 'config/setup.php';
 	require_once 'vendor/dbFunctions.php';
 		if (!$_SESSION['user'] || $_SESSION['user']['varified'] == 0) {
 		header('Location: index.php');

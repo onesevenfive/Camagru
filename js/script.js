@@ -73,9 +73,13 @@ gallery.addEventListener('click', (e) => {
 		})
 		.then(function(body) {
 			self.closest('.gallery__item').remove();
-			if (gallery.querySelectorAll('.gallery__item').length == 0) {
-				gallery.innerHTML = `<div class="no-photo">Нет фото!</div>`;
-			}
+
+			document.location.reload();
+			// paginationScript(0);
+			// addPagination();
+			// if (gallery.querySelectorAll('.gallery__item').length == 0) {
+			// 	gallery.innerHTML = `<div class="no-photo">Нет фото!</div>`;
+			// }
 		});
 	}
 })
@@ -238,4 +242,40 @@ function fillComments(imageSrc) {
 			}
 		}
 	});
+}
+
+function addPagination() {
+	if (document.getElementById('pageNav')) {
+		document.getElementById('pageNav').remove();
+	}
+	if (document.location.pathname == '/profile.php' || document.location.pathname == '/index.php') {
+		fetch('vendor/paginationScript.php', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify('all')
+		})
+		.then(function(response) {
+			return response.text()
+		})
+		.then(function(body) {
+			document.querySelector('.profile_main').insertAdjacentHTML('beforeend', body);
+		});
+	}
+	if (document.location.pathname == '/profile_my.php') {
+		fetch('vendor/paginationScript.php', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify('user')
+		})
+		.then(function(response) {
+			return response.text()
+		})
+		.then(function(body) {
+			document.querySelector('.profile_main').insertAdjacentHTML('beforeend', body);
+		});
+	}
 }

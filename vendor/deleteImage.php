@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'createDatabase.php';
+require_once __DIR__ . '/../config/setup.php';
 
 $image = $_POST['deleteImage'];
 

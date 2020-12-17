@@ -64,6 +64,8 @@ closeNewImage.addEventListener('click', () => {
 	newImageMake.querySelector('.canvas').classList.add('none');
 	deleteStickers();
 	enableStickers(2);
+
+	document.location.reload();
 });
 
 blur.addEventListener("click", function() {
@@ -139,8 +141,6 @@ saveBtn.addEventListener('click', (event) => {
 
 	let files = uploadFile.files;
 	let file = files[0];
-	// let formData = new FormData(form);
-	// formData.append('file', file);
 
 	for (let i = 0; i < canvasZone.children.length; i++) {
 		const currentCanvas = canvasZone.children[i];
@@ -192,6 +192,8 @@ saveBtn.addEventListener('click', (event) => {
 		enableStickers(0);
 		enableStickers(2);
 		enableFilters(0);
+		// paginationScript(1);
+		// addPagination();
 	})
 });
 
@@ -325,3 +327,22 @@ sticker4.addEventListener("click", function() {
 		}
 	}
 });
+
+// addPagination();
+
+function paginationScript(data) {
+	if (data == 1) {
+		if (gallery.children.length > 16) {
+			gallery.lastChild.remove();
+			// if (document.getElementById('pageNav').classList.contains('none')) {
+			// 	document.getElementById('pageNav').classList.remove('none')
+			// }
+			addPagination();
+		}
+	}
+	if (data == 0) {
+		if (gallery.children.length > 16) {
+
+		}
+	}
+}

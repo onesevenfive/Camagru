@@ -39,6 +39,9 @@ if (setBtn) {
 		let getString = new URLSearchParams(getFromUrl);
 		let user_hash = getString.get('hash_restore');
 
+		setBtn.closest('.form_login').querySelector('[name="restore_user_pwd"]').value = '';
+		setBtn.closest('.form_login').querySelector('[name="confirmed_restore_user_pwd"]').value = '';
+
 		if (error == 0) {
 			let comment = {
 				newPwd: newPwd,
@@ -59,6 +62,9 @@ if (setBtn) {
 				let answer = JSON.parse(body);
 				setBtn.closest('.form_login').querySelector('.error_msg').classList.remove('none');
 				setBtn.closest('.form_login').querySelector('.error_msg').textContent = answer.message;
+				setTimeout(function () {
+					window.location = 'login.php';
+				}, 3000);
 			});
 		}
 	});

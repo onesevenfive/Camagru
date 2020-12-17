@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	require_once 'vendor/createDatabase.php';
+	require_once 'config/setup.php';
 	if ($_SESSION['user'] && $_SESSION['user']['varified'] == 1) {
 		header('Location: index.php');
 	}

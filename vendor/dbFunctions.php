@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	require_once 'createDatabase.php';
+	require_once __DIR__ . '/../config/setup.php';
 
 // Get all raw from Images by Image_name
 function getUserIdWithSrc ($imgSrc, $connDb) {
@@ -56,11 +56,42 @@ function getImageLikes ($image_id, $connDb) {
 }
 
 // Get all images of current User
-function getUserImages($user_id, $connDb) {
-	$sql_get_user_images = "SELECT * FROM images WHERE user_id = :user_id ORDER BY id DESC";
+function getUserImagesLimit($user_id, $connDb, $offset, $perPage) {
+	$sql_get_user_images = "SELECT * FROM images WHERE user_id = ? ORDER BY id DESC LIMIT ?, ?";
 	$get_user_images = $connDb->prepare($sql_get_user_images);
-	$get_user_images->bindValue(':user_id', $user_id);
+	$get_user_images->bindValue(1, $user_id, PDO::PARAM_STR);
+	$get_user_images->bindValue(2, $offset, PDO::PARAM_INT);
+	$get_user_images->bindValue(3, $perPage, PDO::PARAM_INT);
 	$get_user_images->execute();
 	$images_found = $get_user_images->fetchAll(PDO::FETCH_ASSOC);
 	return($images_found);
+}
+
+function getUserImages($user_id, $connDb) {
+	$sql_get_user_images = "SELECT * FROM images WHERE user_id = ? ORDER BY id DESC";
+	$get_user_images = $connDb->prepare($sql_get_user_images);
+	$get_user_images->bindValue(1, $user_id, PDO::PARAM_STR);
+	$get_user_images->execute();
+	$images_found = $get_user_images->fetchAll(PDO::FETCH_ASSOC);
+	return($images_found);
+}
+
+
+//Get all images
+function getAllImagesLimit($connDb, $offset, $perPage) {
+	$sql_get_images = "SELECT * FROM images ORDER BY id DESC LIMIT ?, ?";
+	$get_images = $connDb->prepare($sql_get_images);
+	$get_images->bindValue(1, $offset, PDO::PARAM_INT);
+	$get_images->bindValue(2, $perPage, PDO::PARAM_INT);
+	$get_images->execute();
+	$allImages = $get_images->fetchAll(PDO::FETCH_ASSOC);
+	return($allImages);
+}
+
+function getAllImages($connDb) {
+	$sql_get_images = "SELECT * FROM images ORDER BY id DESC";
+	$get_images = $connDb->prepare($sql_get_images);
+	$get_images->execute();
+	$allImages = $get_images->fetchAll(PDO::FETCH_ASSOC);
+	return($allImages);
 }

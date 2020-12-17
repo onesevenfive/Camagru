@@ -47,12 +47,17 @@
 		</form>
 		<div class="gallery">
 			<?php
-				require_once 'vendor/createDatabase.php';
+				require_once 'config/setup.php';
 				require_once 'vendor/dbFunctions.php';
-				function printUserImages($connDb) {
+				require_once 'vendor/pagination.php';
+				if (isset($_GET['page']) && $_GET['page'] > $pagesTotalUser) {
+					$page = 0;
+					$offset = 0;
+				}
+				function printUserImages($connDb, $offset, $perPage) {
 					$user_id = $_SESSION['user']['id'];
 					$user_name = $_SESSION['user']['user_name'];
-					$images_found = getUserImages($user_id, $connDb);
+					$images_found = getUserImagesLimit($user_id, $connDb, $offset, $perPage);
 					for ($i = 0; $i < count($images_found); $i++) {
 						$comments_number = getCommentsNumber($images_found[$i]['id'], $connDb);
 						$currentUserLike = checkCurrentUserLike($_SESSION['user']['id'], $images_found[$i]['id'], $connDb);
@@ -79,7 +84,7 @@
 						<?php
 					}
 				}
-				printUserImages($connDb);
+				printUserImages($connDb, $offset, $perPage);
 			?>
 		</div>
 		<div class="modal">
@@ -156,6 +161,29 @@
 			<button class="close_new_image" type="submit">&times;</button>
 		</div>
 		<div id="overlay"></div>
+		<?php
+			$i = 1;
+			echo '<div id="pageNav" class="pagin '. $displayUser .'">';
+
+			if ($page) {
+				echo '<a href="profile_my.php"><button><<</button></a>';
+				echo '<a href="profile_my.php?page='. $pageDownUser .'"><button><</button></a>';
+			}
+
+			for ($i = 1; $i <= $pagesTotalUser; $i++) {
+				if (($i == $page + 1)) {
+					echo '<a href="profile_my.php?page='. $i .'"><button class="active_page">'. $i .'</button></a>';
+				}
+				if (($i != $page + 1) && ($i <= $page + 3) && ($i >= $page - 1)) {
+					echo '<a href="profile_my.php?page='. $i .'"><button>'. $i .'</button></a>';
+				}
+			}
+			if (($page + 1) != $pagesTotalUser) {
+				echo '<a href="profile_my.php?page='. $pageUpUser .'"><button>></button></a>';
+				echo '<a href="profile_my.php?page='. $pagesTotalUser .'"><button>>></button></a>';
+			}
+			echo "</div>";
+		?>
 	</main>
 	<footer class="footer">
 		<div class="footer_text">

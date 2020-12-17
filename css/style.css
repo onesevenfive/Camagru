@@ -92,6 +92,10 @@ a:hover {
 	margin-right: 0;
 }
 
+.header_login_link {
+	margin-left: auto;
+}
+
 .form.content__form {
 	margin-top: 20px;
 	display: flex;
@@ -106,6 +110,9 @@ a:hover {
 	margin-left: 5%;
 	margin-right: 5%;
 	min-height: 80%;
+
+	display: flex;
+	flex-direction: column;
 }
 
 /* SignIn and SignUp form style____________________________________________________________________________________________ */
@@ -199,6 +206,30 @@ p {
 	margin-left: 5%;
 	margin-right: 5%;
 	padding: 25px 0;
+}
+
+/*Pagination buttons style______________________________________________________________________________*/
+
+#pageNav {
+	margin-top: auto;
+}
+
+#pageNav button {
+	color: #fff;
+	background: #7c9ab7;
+	padding: 8px 12px;
+	margin: 5px 5px 5px 0;
+	border: 0;
+	font-size: 0.7em;
+	cursor: pointer;
+	text-decoration: none;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: bold;
+}
+
+.active_page {
+	text-decoration:underline!important;
+	background: #3978b3!important;
 }
 
 /*Add foto and camera style______________________________________________________________________________*/
@@ -506,6 +537,7 @@ p {
 	display: flex;
 	flex-wrap: wrap;
 	overflow: hidden;
+	justify-self: start;
 }
 
 .gallery__item {
@@ -620,9 +652,6 @@ p {
 		justify-content: center;
 		align-items: center;
 	}
-}
-
-@media (max-width: 665px) {
 	.header_right {
 		margin-bottom: 10px;
 	}

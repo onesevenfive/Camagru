@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	require_once 'createDatabase.php';
+	require_once __DIR__ . '/../config/setup.php';
 
 	if ($_SESSION['user']) {
 		$sql_user_exists = "SELECT * FROM users WHERE user_name = :user";

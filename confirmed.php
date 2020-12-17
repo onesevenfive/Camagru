@@ -26,12 +26,12 @@
 	</header>
 	<main class="signin_main">
 		<?php
-			require_once 'vendor/createDatabase.php';
+			require_once 'config/setup.php';
 			if ($_GET['restore']) {
 				?>
 					<main class="signin_main">
 						<form class="form_login">
-							<input class="signin_input" type="email" name="restore_user_pwd" placeholder="Enter your email">
+							<input class="signin_input" type="email" placeholder="Enter your email">
 							<button class="signin_btn" type="submit" id="restore">Restore</button>
 							<p><a href="/login.php">Back</a></p>
 							<p class="error_msg none">Test message!!</p>
@@ -63,6 +63,7 @@
 					?>
 					<div>
 						<p class="email_confirmed"> Something goes wrong! Oops! </p>
+						<p><a href="/login.php">SignIn</a></p>
 					</div>
 					<?php
 				}

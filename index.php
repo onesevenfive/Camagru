@@ -26,7 +26,7 @@
 			</div>
 			<div class="header_right">
 				<div class="header_menu">
-					<a href="login.php">Login</a>
+					<a href="login.php" class="header_login_link">Login</a>
 				</div>
 			</div>
 		</div>
@@ -34,53 +34,33 @@
 	<main class="profile_main">
 		<div class="gallery">
 			<?php
-				require_once 'vendor/createDatabase.php';
+				require_once 'config/setup.php';
 				require_once 'vendor/dbFunctions.php';
-				function printImages($files, $connDb) {
-					$files = array_filter($files, function($file) {
-						return !in_array($file, ['.' , '..']);
-					});
-					if (count($files)) {
-						foreach ($files as $file) {
-							$imgData = getUserIdWithSrc($file, $connDb);
-							$user_name = getUserNameWithUserId($imgData['user_id'], $connDb)['user_name'];
-							$comments_number = getCommentsNumber($imgData['id'], $connDb);
-							$currentUserLike = checkCurrentUserLike($_SESSION['user']['id'], $imgData['id'], $connDb);
-							$likes_number = getImageLikes($imgData['id'], $connDb);
-							if ($currentUserLike) {
-								$isLike = 'fas';
-							} else {
-								$isLike = 'far';
-							}
-							?>
-								<div class="gallery__item">
-									<img src="/uploads/<?= $file ?>" alt="image" class="gallery__image">
-									<div class="more">
-										<div>
-											<a href="#"><i class="<?= $isLike ?> fa-heart"></i></a>
-											<a href="#" class="likes"> <?= $likes_number ?> </a>
-											<a href="#" id="comments"><i class="far fa-comments"></i></a>
-											<a href="#" class="comments"> <?= $comments_number ?> </a>
-										</div>
-										<a href="#">by <?= $user_name ?></a>
+				require_once 'vendor/pagination.php';
+				function printAllImages($connDb, $offset, $perPage) {
+					$images_found = getAllImagesLimit($connDb, $offset, $perPage);
+					for ($i = 0; $i < count($images_found); $i++) {
+						$imgData = getUserIdWithSrc($images_found[$i]['image_name'], $connDb);
+						$user_name = getUserNameWithUserId($imgData['user_id'], $connDb)['user_name'];
+						$comments_number = getCommentsNumber($images_found[$i]['id'], $connDb);
+						$likes_number = getImageLikes($images_found[$i]['id'], $connDb);
+						?>
+							<div class="gallery__item">
+								<img src="/uploads/<?= $images_found[$i]['image_name'] ?>" alt="image" class="gallery__image">
+								<div class="more">
+									<div>
+										<a href="#"><i class="far fa-heart"></i></a>
+										<a href="#" class="likes"> <?= $likes_number ?> </a>
+										<a href="#" id="comments"><i class="far fa-comments"></i></a>
+										<a href="#" class="comments"> <?= $comments_number ?> </a>
 									</div>
+									<a href="#">by <?= $user_name ?></a>
 								</div>
-							<?php
-						}
-					}
-					else {
-						echo '<div class="no-photo">Нет фото!</div>';
+							</div>
+						<?php
 					}
 				}
-
-				$dir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/';
-				$filesData = array();
-				foreach (scandir($dir) as $file) {
-					$filesData[$file] = filemtime($dir . '/' . $file);
-				}
-				arsort($filesData);
-				$filesData = array_keys($filesData);
-				printImages($filesData, $connDb);
+				printAllImages($connDb, $offset, $perPage);
 			?>
 		</div>
 		<div class="modal">
@@ -93,6 +73,29 @@
 			<button class="close_img_btn" type="submit">Close</button>
 		</div>
 		<div id="overlay"></div>
+		<?php
+			$i = 1;
+			echo '<div id="pageNav" class="pagin '. $display .'>';
+
+			if ($page) {
+				echo '<a href="index.php"><button><<</button></a>';
+				echo '<a href="index.php?page='. $pageDown .'"><button><</button></a>';
+			}
+
+			for ($i = 1; $i <= $pagesTotal; $i++) {
+				if (($i == $page + 1)) {
+					echo '<a href="index.php?page='. $i .'"><button class="active_page">'. $i .'</button></a>';
+				}
+				if (($i != $page + 1) && ($i <= $page + 3) && ($i >= $page - 1)) {
+					echo '<a href="index.php?page='. $i .'"><button>'. $i .'</button></a>';
+				}
+			}
+			if (($page + 1) != $pagesTotal) {
+				echo '<a href="index.php?page='. $pageUp .'"><button>></button></a>';
+				echo '<a href="index.php?page='. $pagesTotal .'"><button>>></button></a>';
+			}
+			echo "</div>";
+		?>
 	</main>
 	<footer class="footer">
 		<div class="footer_text">
