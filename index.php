@@ -20,13 +20,14 @@
 	<header class="header">
 		<div class="container header__container">
 			<div class="camagru_bck">
-				<div class="camagru">
+				<div class="camagru" onclick="backToIndex()">
 					CAMAGRU
 				</div>
 			</div>
 			<div class="header_right">
 				<div class="header_menu">
-					<a href="login.php" class="header_login_link">Login</a>
+					<a href="login.php" class="header_login_link">Sign In</a>
+					<a href="register.php" class="header_login_link">Sign Up</a>
 				</div>
 			</div>
 		</div>
@@ -75,7 +76,7 @@
 		<div id="overlay"></div>
 		<?php
 			$i = 1;
-			echo '<div id="pageNav" class="pagin '. $display .'>';
+			echo '<div id="pageNav" class="pagin'. $display .'">';
 
 			if ($page) {
 				echo '<a href="index.php"><button><<</button></a>';

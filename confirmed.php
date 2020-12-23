@@ -18,7 +18,7 @@
 	<header class="header">
 		<div class="container header__container">
 			<div class="camagru_bck">
-				<div class="camagru">
+				<div class="camagru" onclick="backToIndex()">
 					CAMAGRU
 				</div>
 			</div>
@@ -33,7 +33,7 @@
 						<form class="form_login">
 							<input class="signin_input" type="email" placeholder="Enter your email">
 							<button class="signin_btn" type="submit" id="restore">Restore</button>
-							<p><a href="/login.php">Back</a></p>
+							<p class="fromConfirmed"><a href="/login.php">Back</a></p>
 							<p class="error_msg none">Test message!!</p>
 						</form>
 					</main>
@@ -54,16 +54,16 @@
 								<p class="error_user_pwd none" id="valid_fields">Password must contain from 6 to 15 chars, including at least 1 uppercase letter and 1 numeral</p>
 								<input class="signin_input" type="password" name="confirmed_restore_user_pwd" placeholder="Confirm password">
 								<button class="signin_btn" type="submit" id="set">Set</button>
-								<p><a href="/login.php">Back</a></p>
+								<p class="fromConfirmed"><a href="/login.php">Back</a></p>
 								<p class="error_msg none">Test message!!</p>
 							</form>
 						</main>
 					<?php
 				} else {
 					?>
-					<div>
+					<div class="centerConf">
 						<p class="email_confirmed"> Something goes wrong! Oops! </p>
-						<p><a href="/login.php">SignIn</a></p>
+						<p><a href="/login.php">Sign In</a></p>
 					</div>
 					<?php
 				}
@@ -78,9 +78,9 @@
 				if ($hash_found) {
 					if ($hash_found['varified'] == 0) {
 						?>
-							<div>
+							<div class="centerConf">
 								<p class="email_confirmed"> Email successfully confirmed! </p>
-								<p><a href="/login.php">SignIn</a></p>
+								<p><a href="/login.php">Sign In</a></p>
 							</div>
 							
 						<?php
@@ -90,17 +90,18 @@
 						$set_varified->execute();
 					} else if ($hash_found['varified'] == 1) {
 						?>
-							<div>
+							<div class="centerConf">
 								<p class="email_confirmed"> Email was already confirmed! </p>
-								<p><a href="/login.php">SignIn</a></p>
+								<p><a href="/login.php">Sign In</a></p>
 							</div>
 						<?php
 					}
 				} 
 				else {
 					?>
-					<div>
+					<div class="centerConf">
 						<p class="email_confirmed"> Something goes wrong! Oops! </p>
+						<p><a href="/login.php">Sign In</a></p>
 					</div>
 					<?php
 				}

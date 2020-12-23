@@ -168,6 +168,15 @@ function openPicture(modal, img_src) {
 	modal.querySelector('.signin_input').classList.remove('error_fields');
 }
 
+window.onkeydown = function (e) {
+	if (e.keyCode == 27) {
+		if (document.querySelector('.modal').classList.contains('active')) {
+			let crntModal = document.querySelector('.modal');
+			closePicture(crntModal);
+		}
+	}
+};
+
 function closePicture(modal) {
 	if (modal == null) return;
 	modal.classList.remove('active');
@@ -238,7 +247,8 @@ function fillComments(imageSrc) {
 		let answer = JSON.parse(body);
 		if (answer.status) {
 			for (let i = 0; i < answer.comments.length; i++) {
-				allComments.innerHTML += answer.comments[i]['user_name'] + " " + answer.comments[i]['comment_time'] + " : " + answer.comments[i]['comment_text'] + "<br>";
+				allComments.innerHTML += "<span class='comment_username'>" + answer.comments[i]['user_name'] + "</span>" + 
+				" " + "<span class='comment_time'>" + answer.comments[i]['comment_time'] + "</span>" + " : " + answer.comments[i]['comment_text'] + "<br>";
 			}
 		}
 	});
@@ -278,4 +288,8 @@ function addPagination() {
 			document.querySelector('.profile_main').insertAdjacentHTML('beforeend', body);
 		});
 	}
+}
+
+function backToIndex() {
+	window.location = 'index.php';
 }

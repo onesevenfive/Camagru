@@ -20,7 +20,7 @@
 	<header class="header">
 		<div class="container header__container">
 			<div class="camagru_bck">
-				<div class="camagru">
+				<div class="camagru" onclick="backToIndex()">
 					CAMAGRU
 				</div>
 			</div>
@@ -95,7 +95,7 @@
 		<div id="overlay"></div>
 		<?php
 			$i = 1;
-			echo '<div id="pageNav" class="pagin '. $display .'>';
+			echo '<div id="pageNav" class="pagin '. $display .'">';
 
 			if ($page) {
 				echo '<a href="profile.php"><button><<</button></a>';

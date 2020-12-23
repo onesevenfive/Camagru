@@ -30,6 +30,7 @@ async function getWebcam(){
 const captureBtn = document.querySelector('.capture_btn');
 let canvas = document.getElementById("canvas");
 var canvasContext = canvas.getContext("2d");
+
 captureBtn.addEventListener('click', () => {
 	canvas.width = 1280;
 	canvas.height = 720;
@@ -107,31 +108,72 @@ sepia.addEventListener("click", function() {
 uploadFile.addEventListener('change', (event) => {
 	let files = event.currentTarget.files;
 	filterToNull(canvas);
+	var fileList = [];
 	if (files) {
-		saveBtn.removeAttribute('disabled');
-		captureBtn.setAttribute('disabled', true);
-
-		let file = files[0];
-		let type = file.type;
-		let size = file.size;
-		if (size <= 8000000 && (type == 'image/jpg' || type == 'image/jpeg' || type == 'image/png')) {
-			var reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onload = function (e) {
-				var img = new Image();
-				img.src = e.target.result;
-				img.onload = function () {
-					var height = this.height;
-					var width = this.width;
-					canvas.width = width;
-					canvas.height = height;
-					canvasContext.drawImage(img, 0, 0, width, height, 0, 0, width, height);
-					newImageMake.querySelector('.camera').classList.add('none');
-					newImageMake.querySelector('.canvas').classList.remove('none');
+		// saveBtn.removeAttribute('disabled');
+		// captureBtn.setAttribute('disabled', true);
+		if (files.length <= 1) {
+			let file = files[0];
+			let type = file.type;
+			let size = file.size;
+			if (size <= 8000000 && (type == 'image/jpg' || type == 'image/jpeg' || type == 'image/png')) {
+				var reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onload = function (e) {
+					var img = new Image();
+					img.src = e.target.result;
+					img.onload = function () {
+						var height = this.height;
+						var width = this.width;
+						canvas.width = width;
+						canvas.height = height;
+						canvasContext.drawImage(img, 0, 0, width, height, 0, 0, width, height);
+						newImageMake.querySelector('.camera').classList.add('none');
+						newImageMake.querySelector('.canvas').classList.remove('none');
+						if (newImageMake.querySelector('.camera').classList.contains('none')) {
+							saveBtn.removeAttribute('disabled');
+							captureBtn.setAttribute('disabled', true);
+							enableStickers(1);
+							enableFilters(1);
+						}
+					}
+				};
+			} else {
+				alert('Файл не соответствует размеру или типу');
+			}
+		}
+		if (files.length > 1) {
+			let correctFiles = 0;
+			for (let i = 0; i < files.length; i++) {
+				let file = files[0];
+				let type = file.type;
+				let size = file.size;
+				if (size > 8000000 || (type != 'image/jpg' && type != 'image/jpeg' && type != 'image/png')) {
+					correctFiles += 1;
 				}
-			};
-		} else {
-			alert('Файл не соответствует размеру или типу');
+			}
+			if (correctFiles > 0) {
+				alert('Файл не соответствует размеру или типу');
+			}
+			if (correctFiles == 0) {
+				fileList = [];
+				for (let i = 0; i < files.length; i++) {
+					fileList.push(files[i]);
+				}
+				var img1 = new Image();
+				img1.src = 'fonts/multiple.png';
+				canvas.width = 1280;
+				canvas.height = 720;
+				img1.onload = function() {
+					canvasContext.drawImage(img1, 0, 0, 1280, 720, 0, 0, 1280, 720);
+				}
+				newImageMake.querySelector('.camera').classList.add('none');
+				newImageMake.querySelector('.canvas').classList.remove('none');
+				if (newImageMake.querySelector('.camera').classList.contains('none')) {
+					saveBtn.removeAttribute('disabled');
+					captureBtn.setAttribute('disabled', true);
+				}
+			}
 		}
 	}
 });
@@ -140,61 +182,101 @@ saveBtn.addEventListener('click', (event) => {
 	event.preventDefault();
 
 	let files = uploadFile.files;
-	let file = files[0];
 
-	for (let i = 0; i < canvasZone.children.length; i++) {
-		const currentCanvas = canvasZone.children[i];
-		currentCanvas.getContext('2d');
-		canvasContext.drawImage(currentCanvas, 0, 0);
-	}
-	let fileUrl = canvas.toDataURL();
-	let comment = {
-		fileUrl: fileUrl
-	}
-	fetch(`${location.origin}/vendor/addImages.php`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(comment)
-	})
-	.then(function(response) {
-		return response.text()
-	})
-	.then(function(body) {
-		let answer = JSON.parse(body);
-		let fileHTML = `
-		<div class="gallery__item">
-			<img src="/uploads/${answer.image_name}" alt="image" class="gallery__image">
-			<a href="#" class="gallery__btn"><i class="far fa-trash-alt"></i></a>
-			<div class="more">
-				<div>
-					<a href="#"><i class="far fa-heart"></i></a>
-					<a href="#" class="likes"> </a>
-					<a href="#" id="comments"><i class="far fa-comments"></i></a>
-					<a href="#" class="comments"> </a>
-				</div>
-				<a href="#">by ${answer.user_name}</a>
-			</div>
-		</div>
-		`;
-		
-		if (document.contains(document.querySelector('.no-photo'))) {
-			document.querySelector('.no-photo').remove();
+	if (files.length == 1) {
+		for (let i = 0; i < canvasZone.children.length; i++) {
+			const currentCanvas = canvasZone.children[i];
+			currentCanvas.getContext('2d');
+			canvasContext.drawImage(currentCanvas, 0, 0);
 		}
-		gallery.insertAdjacentHTML('afterbegin', fileHTML);
+		let fileUrl = canvas.toDataURL();
+		let comment = {
+			fileUrl: fileUrl
+		}
+		fetch(`${location.origin}/vendor/addImages.php`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(comment)
+		})
+		.then(function(response) {
+			return response.text()
+		})
+		.then(function(body) {
+			let answer = JSON.parse(body);
+			let fileHTML = `
+			<div class="gallery__item">
+				<img src="/uploads/${answer.image_name}" alt="image" class="gallery__image">
+				<a href="#" class="gallery__btn"><i class="far fa-trash-alt"></i></a>
+				<div class="more">
+					<div>
+						<a href="#"><i class="far fa-heart"></i></a>
+						<a href="#" class="likes"> </a>
+						<a href="#" id="comments"><i class="far fa-comments"></i></a>
+						<a href="#" class="comments"> </a>
+					</div>
+					<a href="#">by ${answer.user_name}</a>
+				</div>
+			</div>
+			`;
+			
+			if (document.contains(document.querySelector('.no-photo'))) {
+				document.querySelector('.no-photo').remove();
+			}
+			gallery.insertAdjacentHTML('afterbegin', fileHTML);
+			newImageMake.querySelector('.camera').classList.remove('none');
+			newImageMake.querySelector('.canvas').classList.add('none');
+			captureBtn.removeAttribute('disabled');
+			saveBtn.setAttribute('disabled', true);
+			filterToNull(canvas);
+			deleteStickers();
+			enableStickers(0);
+			enableStickers(2);
+			enableFilters(0);
+		})
+	}
+	if (files.length > 1) {
+		for (let i = 0; i < files.length; i++) {
+			let formdata = new FormData();
+			formdata.append('file', files[i]);
+			fetch('vendor/addMultImages.php', {
+				method: 'POST',
+				body: formdata
+			})
+			.then(function(response) {
+				return response.text()
+			})
+			.then(function(body) {
+				let answer = JSON.parse(body);
+				let fileHTML = `
+				<div class="gallery__item">
+					<img src="/uploads/${answer.image_name}" alt="image" class="gallery__image">
+					<a href="#" class="gallery__btn"><i class="far fa-trash-alt"></i></a>
+					<div class="more">
+						<div>
+							<a href="#"><i class="far fa-heart"></i></a>
+							<a href="#" class="likes"> </a>
+							<a href="#" id="comments"><i class="far fa-comments"></i></a>
+							<a href="#" class="comments"> </a>
+						</div>
+						<a href="#">by ${answer.user_name}</a>
+					</div>
+				</div>
+				`;
+				
+				if (document.contains(document.querySelector('.no-photo'))) {
+					document.querySelector('.no-photo').remove();
+				}
+				gallery.insertAdjacentHTML('afterbegin', fileHTML);
+			})
+		}
 		newImageMake.querySelector('.camera').classList.remove('none');
 		newImageMake.querySelector('.canvas').classList.add('none');
 		captureBtn.removeAttribute('disabled');
 		saveBtn.setAttribute('disabled', true);
 		filterToNull(canvas);
-		deleteStickers();
-		enableStickers(0);
-		enableStickers(2);
-		enableFilters(0);
-		// paginationScript(1);
-		// addPagination();
-	})
+	}
 });
 
 function filterToNull(canvas) {

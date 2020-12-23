@@ -103,6 +103,15 @@ function openModal(modal) {
 	modal.classList.add('active');
 }
 
+window.onkeydown = function (e) {
+	if (e.keyCode == 27) {
+		if (document.querySelector('.active')) {
+			let crntModal = document.querySelector('.active');
+			closeModal(crntModal);
+		}
+	}
+};
+
 function closeModal(modal) {
 	if (modal == null) return;
 	modal.classList.remove('active');
@@ -116,4 +125,8 @@ function closeModal(modal) {
 	field.forEach(pole => {
 		pole.value = '';
 	});
+}
+
+function backToIndex() {
+	window.location = 'index.php';
 }

@@ -20,7 +20,7 @@
 	<header class="header">
 		<div class="container header__container">
 			<div class="camagru_bck">
-				<div class="camagru">
+				<div class="camagru" onclick="backToIndex()">
 					CAMAGRU
 				</div>
 			</div>
@@ -154,7 +154,7 @@
 					<button class="save_btn" disabled>Save</button>
 				</div>
 				<div class="div_with_upload">
-					<input class="upload_file" type="file" name="file" id="file" accept="image/jpeg,image/png">
+					<input class="upload_file" type="file" name="file" id="file" accept="image/jpeg,image/png" multiple>
 					<label for="file" class="upload_btn">Upload</label>
 				</div>
 			</div>

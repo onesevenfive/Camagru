@@ -18,7 +18,7 @@
 	<header class="header">
 		<div class="container header__container">
 			<div class="camagru_bck">
-				<div class="camagru">
+				<div class="camagru" onclick="backToIndex()">
 					CAMAGRU
 				</div>
 			</div>
@@ -40,7 +40,7 @@
 				<input class="signin_input" id="notif_checkbox" type="checkbox" checked><p class="notifications">Receive comment notifications on email</p>
 			</div>
 			<button class="register_btn" type="submit">Register</button>
-			<p>Already got account? - <a href="/login.php">SignIn</a></p>
+			<p>Already got account? - <a href="/login.php">Sign In</a></p>
 			<p class="error_msg none">Test message!!</p>
 		</form>
 	</main>

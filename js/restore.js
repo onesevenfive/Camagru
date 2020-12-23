@@ -82,3 +82,7 @@ if (user_pwd) {
 		}
 	});
 }
+
+function backToIndex() {
+	window.location = 'index.php';
+}

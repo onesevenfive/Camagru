@@ -19,7 +19,7 @@
 	<header class="header">
 		<div class="container header__container">
 			<div class="camagru_bck">
-				<div class="camagru">
+				<div class="camagru" onclick="backToIndex()">
 					CAMAGRU
 				</div>
 			</div>
@@ -33,7 +33,7 @@
 			<input class="signin_input" type="password" name="user_pwd" placeholder="Password">
 			<a href="/confirmed.php?restore=omg" class ="forgot">Forgot password?</a>
 			<button class="signin_btn" type="submit">Sign In</button>
-			<p>Don't have account? - <a href="/register.php">SignUp</a></p>
+			<p>Don't have account? - <a href="/register.php">Sign Up</a></p>
 			<p class="error_msg none">Test message!!</p>
 		</form>
 	</main>

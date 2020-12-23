@@ -54,3 +54,7 @@ registerBtn.addEventListener('click', (e) => {
 		});
 	}
 });
+
+function backToIndex() {
+	window.location = 'index.php';
+}
